@@ -19,7 +19,7 @@ defmodule Lunchclub.Mixfile do
   def application do
     [mod: {Lunchclub, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :mariaex, :ueberauth_google,]]
+                    :phoenix_ecto, :mariaex, :ueberauth_google, :guardian]]
   end
 
   # Specifies which paths to compile per environment.
@@ -39,6 +39,7 @@ defmodule Lunchclub.Mixfile do
      {:gettext, "~> 0.11"},
      {:ueberauth, "~> 0.2"},
      {:ueberauth_google, "~> 0.2"},
+     {:guardian, "~> 0.14"},
      {:cowboy, "~> 1.0"}]
   end
 

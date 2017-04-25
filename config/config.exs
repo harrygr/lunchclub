@@ -22,6 +22,16 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+config :guardian, Guardian,
+  allowed_algos: ["HS512"], # optional
+  verify_module: Guardian.JWT,  # optional
+  issuer: "LunchClub",
+  ttl: { 30, :days },
+  allowed_drift: 2000,
+  verify_issuer: true, # optional
+  secret_key: "YgUaD9Y3TWSJN5EAoOprSt5BhMUDjY03bafIuBacKruCWdy84UNsvWArjxfWQsAB",
+  serializer: Lunchclub.GuardianSerializer
+
 config :ueberauth, Ueberauth,
   providers: [
     google: { Ueberauth.Strategy.Google, [] },

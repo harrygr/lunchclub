@@ -7,6 +7,7 @@ defmodule Lunchclub.AuthController do
   plug Ueberauth
 
   alias Ueberauth.Strategy.Helpers
+  alias Lunchclub.User
 
   def request(conn, _params) do
     render(conn, "request.html", callback_url: Helpers.callback_url(conn))
@@ -26,18 +27,33 @@ defmodule Lunchclub.AuthController do
   end
 
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
-    IO.inspect(auth)
-    conn |> redirect(to: "/")
-    # case UserFromAuth.find_or_create(auth) do
-    #   {:ok, user} ->
-    #     conn
-    #     |> put_flash(:info, "Successfully authenticated.")
-    #     |> put_session(:current_user, user)
-    #     |> redirect(to: "/")
-    #   {:error, reason} ->
-    #     conn
-    #     |> put_flash(:error, reason)
-    #     |> redirect(to: "/")
-    # end
+    case UserFromAuth.find_or_create(auth) do
+      {:ok, user} ->
+        registered_user = find_or_create(user)
+        IO.inspect(registered_user)
+        conn
+        |> put_flash(:info, "Successfully authenticated.")
+        |> redirect(to: "/")
+      {:error, reason} ->
+        conn
+        |> put_flash(:error, reason)
+        |> redirect(to: "/")
+    end
+  end
+
+  defp find_or_create(user_params) do
+    IO.inspect(user_params)
+    case User |> where(provider_id: ^user_params.provider_id) |> Repo.one do
+      nil -> insert_user(user_params)
+      user -> IO.inspect(user)
+    end
+  end
+
+  defp insert_user(user_params) do
+    changeset = User.changeset(%User{}, user_params)
+    case Repo.insert(changeset) do
+      {:ok, user} -> user
+      {:error, reason} -> IO.inspect(reason)
+    end
   end
 end
