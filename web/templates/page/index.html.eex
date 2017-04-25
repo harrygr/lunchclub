@@ -33,4 +33,6 @@
       </li>
     </ul>
   </div>
+
+  <a href="/auth/google">Login With Google</a>
 </div>

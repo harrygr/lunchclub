@@ -13,7 +13,7 @@ defmodule Lunchclub.UserView do
     %{id: user.id,
       email: user.email,
       provider: user.provider,
-      name: user.last_name,
+      name: user.name,
       avatar: user.avatar}
   end
 end

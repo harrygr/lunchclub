@@ -13,6 +13,11 @@ defmodule Lunchclub.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :api_auth do
+    plug Guardian.Plug.VerifyHeader, realm: "Bearer"
+    plug Guardian.Plug.LoadResource
+  end
+
   scope "/auth", Lunchclub do
     pipe_through [:browser]
 
@@ -26,6 +31,13 @@ defmodule Lunchclub.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+    get "/app", PageController, :app
+  end
+
+  scope "/api", Lunchclub do
+    pipe_through [:api, :api_auth]
+
+    get "/profile", UserController, :profile
   end
 
   # Other scopes may use custom stacks.

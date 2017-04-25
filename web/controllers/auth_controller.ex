@@ -2,6 +2,7 @@ defmodule Lunchclub.AuthController do
   @moduledoc """
   Auth controller responsible for handling Ueberauth responses
   """
+  require Logger
 
   use Lunchclub.Web, :controller
   plug Ueberauth
@@ -27,13 +28,18 @@ defmodule Lunchclub.AuthController do
   end
 
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
-    case UserFromAuth.find_or_create(auth) do
-      {:ok, user} ->
-        registered_user = find_or_create(user)
-        IO.inspect(registered_user)
+    case UserFromAuth.get_info(auth) do
+      {:ok, user_info} ->
+        user = find_or_create(user_info)
+        { :ok, jwt, claims } = Guardian.encode_and_sign(user, :access)
+
         conn
+        |> put_resp_cookie("_token", jwt, [
+          max_age: claims["exp"] - claims["iat"],
+          http_only: false
+        ])
         |> put_flash(:info, "Successfully authenticated.")
-        |> redirect(to: "/")
+        |> redirect(to: "/app")
       {:error, reason} ->
         conn
         |> put_flash(:error, reason)
@@ -41,8 +47,14 @@ defmodule Lunchclub.AuthController do
     end
   end
 
+  def unauthenticated(conn, params) do
+    Logger.debug(inspect(params))
+    conn
+    |> put_status(401)
+    |> render(Lunchclub.ErrorView, "401.json")
+  end
+
   defp find_or_create(user_params) do
-    IO.inspect(user_params)
     case User |> where(provider_id: ^user_params.provider_id) |> Repo.one do
       nil -> insert_user(user_params)
       user -> IO.inspect(user)
