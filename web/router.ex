@@ -13,6 +13,15 @@ defmodule Lunchclub.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/auth", Lunchclub do
+    pipe_through [:browser]
+
+    get "/:provider", AuthController, :request
+    get "/:provider/callback", AuthController, :callback
+    post "/:provider/callback", AuthController, :callback
+    delete "/logout", AuthController, :delete
+  end
+
   scope "/", Lunchclub do
     pipe_through :browser # Use the default browser stack
 
