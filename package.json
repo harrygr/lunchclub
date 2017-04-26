@@ -8,7 +8,7 @@
   },
   "scripts": {
     "setenv": "source ./.env 2> /dev/null",
-    "dev": "npm run setenv && mix phoenix.server && webpack --watch",
+    "dev": "npm run setenv && mix phoenix.server & webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/harrygr/lunchclub#readme",
   "dependencies": {
+    "@types/node": "^7.0.13",
     "ts-loader": "^2.0.3",
     "typescript": "^2.2.2",
     "webpack": "^2.4.1"

@@ -1,3 +1,5 @@
+const webpack = require('webpack')
+
 module.exports = {
 	entry: './ui/index.ts',
 	output: {
@@ -15,5 +17,12 @@ module.exports = {
 	},
 	resolve: {
 		extensions: [".tsx", ".ts", ".js"]
-	}
+	},
+	plugins: [
+		new webpack.DefinePlugin({
+			'process.env': {
+				'GOOGLE_CLIENT_ID': JSON.stringify(process.env.GOOGLE_CLIENT_ID)
+			}
+		})
+	]
 }
