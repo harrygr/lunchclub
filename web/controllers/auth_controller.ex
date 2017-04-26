@@ -5,7 +5,7 @@ defmodule Lunchclub.AuthController do
   require Logger
 
   use Lunchclub.Web, :controller
-  plug Ueberauth
+
 
   alias Ueberauth.Strategy.Helpers
   alias Lunchclub.User
@@ -21,30 +21,36 @@ defmodule Lunchclub.AuthController do
     |> redirect(to: "/")
   end
 
-  def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
-    conn
-    |> put_flash(:error, "Failed to authenticate.")
-    |> redirect(to: "/")
-  end
 
-  def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
-    case UserFromAuth.get_info(auth) do
-      {:ok, user_info} ->
-        user = find_or_create(user_info)
-        { :ok, jwt, claims } = Guardian.encode_and_sign(user, :access)
+  def callback(conn, %{"code" => code}) do
+    config = Application.get_env(:ueberauth, Ueberauth.Strategy.Google.OAuth)
+    IO.inspect(config)
+    client = OAuth2.Client.new(Keyword.merge([
+      site: "https://localhost:4000",
+      redirect_uri: "https://localhost:4000"
+    ], config))
+    client = OAuth2.Client.get_token!(client, code: code)
+    resource = OAuth2.Client.get!(client, "https://www.googleapis.com/oauth2/v3/userinfo")
+    IO.inspect(resource)
+    # case UserFromAuth.get_info(auth) do
+    #   {:ok, user_info} ->
+    #     user = find_or_create(user_info)
 
-        conn
-        |> put_resp_cookie("_token", jwt, [
-          max_age: claims["exp"] - claims["iat"],
-          http_only: false
-        ])
-        |> put_flash(:info, "Successfully authenticated.")
-        |> redirect(to: "/app")
-      {:error, reason} ->
-        conn
-        |> put_flash(:error, reason)
-        |> redirect(to: "/")
-    end
+
+    #     response = Guardian.Plug.api_sign_in(conn, user)
+    #     jwt = Guardian.Plug.current_token(response)
+    #     claims = get_claims(response)
+
+    #     response
+    #     |> put_resp_header("authorization", "Bearer #{jwt}")
+    #     |> put_resp_header("x-expires", "#{claims["exp"]}")
+    #     |> render("login.json", Map.merge(%{"user" => user, "jwt" => jwt}, claims))
+    #   {:error, reason} ->
+    #     IO.inspect(reason)
+    #     conn
+    #     |> put_status(401)
+    #     |> render(Lunchclub.ErrorView, "401.json")
+    # end
   end
 
   def unauthenticated(conn, params) do
@@ -58,6 +64,13 @@ defmodule Lunchclub.AuthController do
     case User |> where(provider_id: ^user_params.provider_id) |> Repo.one do
       nil -> insert_user(user_params)
       user -> IO.inspect(user)
+    end
+  end
+
+  defp get_claims(conn) do
+    case Guardian.Plug.claims(conn) do
+      {:ok, claims} -> Map.take(claims, ["exp", "sub"])
+      _ -> %{"exp" => "", "sub" => ""}
     end
   end
 

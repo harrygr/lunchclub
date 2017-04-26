@@ -10,10 +10,15 @@ defmodule Lunchclub.UserView do
   end
 
   def render("user.json", %{user: user}) do
+    user_json user
+  end
+
+  def user_json(user) do
     %{id: user.id,
       email: user.email,
       provider: user.provider,
       name: user.name,
-      avatar: user.avatar}
+      avatar: user.avatar
+    }
   end
 end

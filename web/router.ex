@@ -9,6 +9,12 @@ defmodule Lunchclub.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :spa do
+    plug :put_layout, false
+    plug :accepts, ["html"]
+    plug :put_secure_browser_headers
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
@@ -19,19 +25,19 @@ defmodule Lunchclub.Router do
   end
 
   scope "/auth", Lunchclub do
-    pipe_through [:browser]
+    pipe_through [:api]
 
-    get "/:provider", AuthController, :request
+    # get "/:provider", AuthController, :request
     get "/:provider/callback", AuthController, :callback
     post "/:provider/callback", AuthController, :callback
-    delete "/logout", AuthController, :delete
+    # delete "/logout", AuthController, :delete
   end
 
   scope "/", Lunchclub do
-    pipe_through :browser # Use the default browser stack
+    pipe_through :spa # Use the SPA browser stack
 
     get "/", PageController, :index
-    get "/app", PageController, :app
+    get "/*path", PageController, :index
   end
 
   scope "/api", Lunchclub do
