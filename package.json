@@ -1,0 +1,29 @@
+{
+  "name": "lunchclub",
+  "version": "1.0.0",
+  "description": "To start your Phoenix app:",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "setenv": "source ./.env 2> /dev/null",
+    "dev": "npm run setenv && mix phoenix.server && webpack --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harrygr/lunchclub.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/harrygr/lunchclub/issues"
+  },
+  "homepage": "https://github.com/harrygr/lunchclub#readme",
+  "dependencies": {
+    "ts-loader": "^2.0.3",
+    "typescript": "^2.2.2",
+    "webpack": "^2.4.1"
+  }
+}
