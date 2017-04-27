@@ -36,20 +36,37 @@ function onSuccess(googleUser) {
     }
   }).then(response => console.log(response))
 }
+
 function onFailure(error) {
   console.log(error);
 }
 
+function signOut() {
+  const auth2 = gapi.auth2.getAuthInstance()
+  auth2.signOut().then(() => {
+    console.log('User signed out.')
+  })
+}
+
 function renderButton() {
-      gapi.signin2.render('my-signin2', {
-        'scope': 'profile email',
-        'width': 240,
-        'height': 50,
-        'longtitle': true,
-        'theme': 'dark',
-        'onsuccess': onSuccess,
-        'onfailure': onFailure
-      });
-    }
+  gapi.signin2.render('my-signin2', {
+    'scope': 'profile email',
+    'width': 240,
+    'height': 50,
+    'longtitle': true,
+    'theme': 'dark',
+    'onsuccess': onSuccess,
+    'onfailure': onFailure
+  });
+}
+
+function renderSignOutButton () {
+  const $button = document.createElement('button')
+  $button.innerText = 'Sign Out'
+  $button.onclick = signOut
+
+  document.body.appendChild($button)
+}
 
 loadScript('https://apis.google.com/js/platform.js', initAuth)
+renderSignOutButton()

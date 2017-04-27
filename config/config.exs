@@ -9,6 +9,10 @@ use Mix.Config
 config :lunchclub,
   ecto_repos: [Lunchclub.Repo]
 
+config :lunchclub, Lunchclub.Auth.Google,
+  client_id: System.get_env("GOOGLE_CLIENT_ID"),
+  client_secret: System.get_env("GOOGLE_CLIENT_SECRET")
+
 # Configures the endpoint
 config :lunchclub, Lunchclub.Endpoint,
   url: [host: "localhost"],
@@ -31,21 +35,6 @@ config :guardian, Guardian,
   verify_issuer: true, # optional
   secret_key: "YgUaD9Y3TWSJN5EAoOprSt5BhMUDjY03bafIuBacKruCWdy84UNsvWArjxfWQsAB",
   serializer: Lunchclub.GuardianSerializer
-
-config :ueberauth, Ueberauth,
-  providers: [
-    google: { Ueberauth.Strategy.Google, [] },
-    identity: { Ueberauth.Strategy.Identity, [
-        callback_methods: ["POST"],
-        uid_field: :username,
-        nickname_field: :username,
-      ] },
-  ]
-
-config :ueberauth, Ueberauth.Strategy.Google.OAuth,
-  client_id: System.get_env("GOOGLE_CLIENT_ID"),
-  client_secret: System.get_env("GOOGLE_CLIENT_SECRET"),
-  redirect_uri: System.get_env("GOOGLE_REDIRECT_URI") || "http://localhost:4000/google/callback"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

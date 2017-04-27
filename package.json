@@ -8,7 +8,7 @@
   },
   "scripts": {
     "setenv": "source ./.env 2> /dev/null",
-    "dev": "npm run setenv && mix phoenix.server & webpack --watch",
+    "dev": "source ./.env 2> /dev/null && mix phoenix.server & webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
